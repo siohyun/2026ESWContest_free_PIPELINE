@@ -17,6 +17,9 @@
             android:name=".ControlActivity"
             android:exported="false" />
         <activity
+            android:name=".MapUploadActivity"
+            android:exported="false" />
+        <activity
             android:name=".MainActivity"
             android:exported="true">
 

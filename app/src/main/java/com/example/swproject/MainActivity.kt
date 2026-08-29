@@ -1,6 +1,7 @@
 package com.example.swproject
 
 import android.Manifest
+import android.net.Uri
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.PendingIntent
@@ -19,6 +20,12 @@ import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import com.example.swproject.databinding.ActivityMainBinding
 import android.annotation.SuppressLint
+import android.view.MotionEvent
+import android.widget.ImageView
+import android.widget.FrameLayout
+import android.app.AlertDialog
+import android.widget.EditText
+import android.widget.LinearLayout
 
 class MainActivity : AppCompatActivity() {
 
@@ -27,6 +34,11 @@ class MainActivity : AppCompatActivity() {
     }
 
     private var currentStatus = "NORMAL"
+    private val sensorMarkers =
+        mutableMapOf<String, ImageView>()
+
+    private val sensorStatuses =
+        mutableMapOf<String, String>()
 
     companion object {
         const val CHANNEL_ID = "danger_channel"
@@ -39,6 +51,47 @@ class MainActivity : AppCompatActivity() {
 
         enableEdgeToEdge()
         setContentView(binding.root)
+        // 저장된 설정 가져오기
+        val prefs = getSharedPreferences(
+            "app_pref",
+            MODE_PRIVATE
+        )
+
+        // 지도 업로드 여부 확인
+        val mapUploaded = prefs.getBoolean(
+            "map_uploaded",
+            false
+        )
+
+        // 지도를 아직 업로드하지 않았다면
+        // 지도 업로드 화면으로 이동
+        if (!mapUploaded) {
+
+            startActivity(
+                Intent(
+                    this,
+                    MapUploadActivity::class.java
+                )
+            )
+
+            finish()
+
+            return
+        }
+
+        // 저장된 지도 불러오기
+        val mapUri = prefs.getString(
+            "map_uri",
+            null
+        )
+
+        if (mapUri != null) {
+
+            binding.imgMap.setImageURI(
+                Uri.parse(mapUri)
+            )
+            loadSensors()
+        }
 
         createNotificationChannel()
         requestNotificationPermission()
@@ -46,6 +99,7 @@ class MainActivity : AppCompatActivity() {
         // 처음에는 정상 이미지 표시
         binding.imgWater.setImageResource(R.drawable.normal)
 
+        setupMapTouch()
         if (intent.getBooleanExtra("action_complete", false)) {
 
             currentStatus = "NORMAL"
@@ -53,6 +107,7 @@ class MainActivity : AppCompatActivity() {
             binding.imgWater.setImageResource(
                 R.drawable.normal
             )
+
 
             val notificationManager =
                 getSystemService(
@@ -64,11 +119,61 @@ class MainActivity : AppCompatActivity() {
             )
         }
     }
+    private fun changeSensorStatus(
+        sensorId: String,
+        status: String
+    ) {
+
+        val marker = sensorMarkers[sensorId]
+            ?: return
+
+        runOnUiThread {
+
+            when (status) {
+
+                "NORMAL" -> {
+                    marker.setImageResource(
+                        R.drawable.sensor_normal
+                    )
+                }
+
+                "WARNING" -> {
+                    marker.setImageResource(
+                        R.drawable.sensor_warning
+                    )
+                }
+
+                "DANGER" -> {
+                    marker.setImageResource(
+                        R.drawable.sensor_danger
+                    )
+                }
+            }
+        }
+    }
 
     // STM32에서 받은 신호에 따라 이미지 변경
     private fun changeImage(signal: String) {
 
-        val status = signal.trim()
+        val data = signal.trim().split("|")
+
+        // 예: SENSOR_01|WARNING
+        if (data.size != 2) {
+            return
+        }
+
+        val sensorId = data[0]
+        val status = data[1]
+
+        // 센서의 현재 상태 저장
+        sensorStatuses[sensorId] = status
+
+
+        // 해당 센서 아이콘 변경
+        changeSensorStatus(
+            sensorId,
+            status
+        )
 
         runOnUiThread {
 
@@ -92,19 +197,17 @@ class MainActivity : AppCompatActivity() {
                     )
                 }
 
-
                 "WARNING" -> {
 
                     binding.imgWater.setImageResource(
                         R.drawable.warning
                     )
 
-                    // 같은 WARNING 상태에서 알림 반복 방지
                     if (currentStatus != "WARNING") {
 
                         showNotification(
                             "수위 경고",
-                            "수위가 상승했습니다. 조치가 필요합니다.",
+                            "$sensorId 수위가 상승했습니다.",
                             "WARNING"
                         )
                     }
@@ -112,19 +215,17 @@ class MainActivity : AppCompatActivity() {
                     currentStatus = "WARNING"
                 }
 
-
                 "DANGER" -> {
 
                     binding.imgWater.setImageResource(
                         R.drawable.danger
                     )
 
-                    // DANGER 상태가 처음 발생했을 때 알림
                     if (currentStatus != "DANGER") {
 
                         showNotification(
                             "위험 발생",
-                            "위험 수위입니다. 즉시 조치를 취해주세요.",
+                            "$sensorId 위험 수위입니다.",
                             "DANGER"
                         )
                     }
@@ -133,6 +234,7 @@ class MainActivity : AppCompatActivity() {
                 }
             }
         }
+
     }
 
 
@@ -317,18 +419,349 @@ class MainActivity : AppCompatActivity() {
 
         if (intent.getBooleanExtra("action_complete", false)) {
 
-            currentStatus = "NORMAL"
+            // 조치 완료한 센서 ID
+            val sensorId =
+                intent.getStringExtra("sensor_id")
 
-            binding.imgWater.setImageResource(
-                R.drawable.normal
-            )
+            // 해당 센서만 정상으로 변경
+            if (sensorId != null) {
 
+                sensorStatuses[sensorId] = "NORMAL"
+
+                changeSensorStatus(
+                    sensorId,
+                    "NORMAL"
+                )
+            }
+
+            // 모든 센서의 상태를 확인해서
+            // 가장 위험한 상태를 메인 이미지에 표시
+            updateOverallStatus()
+
+            // 알림 제거
             val notificationManager =
                 getSystemService(
                     Context.NOTIFICATION_SERVICE
                 ) as NotificationManager
 
-            notificationManager.cancel(NOTIFICATION_ID)
+            notificationManager.cancel(
+                NOTIFICATION_ID
+            )
         }
     }
+    private fun updateOverallStatus() {
+
+        var overallStatus = "NORMAL"
+
+        for (status in sensorStatuses.values) {
+
+            if (status == "DANGER") {
+
+                overallStatus = "DANGER"
+                break
+
+            } else if (
+                status == "WARNING" &&
+                overallStatus != "DANGER"
+            ) {
+
+                overallStatus = "WARNING"
+            }
+        }
+
+        currentStatus = overallStatus
+
+        when (overallStatus) {
+
+            "NORMAL" -> {
+
+                binding.imgWater.setImageResource(
+                    R.drawable.normal
+                )
+            }
+
+            "WARNING" -> {
+
+                binding.imgWater.setImageResource(
+                    R.drawable.warning
+                )
+            }
+
+            "DANGER" -> {
+
+                binding.imgWater.setImageResource(
+                    R.drawable.danger
+                )
+            }
+        }
+    }
+    private fun setupMapTouch() {
+
+        binding.imgMap.setOnTouchListener { _, event ->
+
+            if (event.action == MotionEvent.ACTION_DOWN) {
+
+                showSensorDialog(
+                    event.x,
+                    event.y
+                )
+            }
+
+            true
+        }
+    }
+    private fun showSensorDialog(
+        x: Float,
+        y: Float
+    ) {
+
+        val layout = LinearLayout(this)
+
+        layout.orientation = LinearLayout.VERTICAL
+
+        layout.setPadding(
+            40,
+            10,
+            40,
+            10
+        )
+
+        val nameInput = EditText(this)
+
+        nameInput.hint = "센서 이름"
+
+        val idInput = EditText(this)
+
+        idInput.hint = "STM32 센서 ID"
+
+        layout.addView(nameInput)
+        layout.addView(idInput)
+
+        AlertDialog.Builder(this)
+            .setTitle("센서 추가")
+            .setView(layout)
+            .setPositiveButton("추가") { _, _ ->
+
+                val name =
+                    nameInput.text.toString().trim()
+
+                val id =
+                    idInput.text.toString().trim()
+
+                if (
+                    name.isNotEmpty() &&
+                    id.isNotEmpty()
+                ) {
+
+                    addSensorMarker(
+                        name,
+                        id,
+                        x,
+                        y
+                    )
+                }
+            }
+            .setNegativeButton(
+                "취소",
+                null
+            )
+            .show()
+    }
+    private fun addSensorMarker(
+        name: String,
+        id: String,
+        x: Float,
+        y: Float
+    ) {
+
+        val marker = ImageView(this)
+
+        marker.setImageResource(
+            R.drawable.sensor_normal
+        )
+
+// 센서 ID와 이미지 연결
+        sensorMarkers[id] = marker
+
+        val size = 70
+
+        val params =
+            FrameLayout.LayoutParams(
+                size,
+                size
+            )
+
+        params.leftMargin =
+            x.toInt() - size / 2
+
+        params.topMargin =
+            y.toInt() - size / 2
+
+        binding.mapContainer.addView(
+            marker,
+            params
+        )
+        saveSensor(
+            name,
+            id,
+            x / binding.imgMap.width,
+            y / binding.imgMap.height
+        )
+
+        marker.setOnClickListener {
+
+            val intent = Intent(
+                this,
+                ControlActivity::class.java
+            )
+
+            intent.putExtra(
+                "sensor_name",
+                name
+            )
+
+            intent.putExtra(
+                "sensor_id",
+                id
+            )
+
+            intent.putExtra(
+                "status",
+                "NORMAL"
+            )
+
+            startActivity(intent)
+
+        }
+    }
+    private fun saveSensor(
+        name: String,
+        id: String,
+        x: Float,
+        y: Float
+    ) {
+
+        val prefs = getSharedPreferences(
+            "app_pref",
+            MODE_PRIVATE
+        )
+
+        val sensors =
+            prefs.getStringSet(
+                "sensors",
+                mutableSetOf()
+            )?.toMutableSet()
+                ?: mutableSetOf()
+
+        val sensorData =
+            "$name|$id|$x|$y"
+
+        sensors.add(sensorData)
+
+        prefs.edit()
+            .putStringSet(
+                "sensors",
+                sensors
+            )
+            .apply()
+    }
+    private fun loadSensors() {
+
+        val prefs = getSharedPreferences(
+            "app_pref",
+            MODE_PRIVATE
+        )
+
+        val sensors =
+            prefs.getStringSet(
+                "sensors",
+                emptySet()
+            ) ?: emptySet()
+
+        for (sensor in sensors) {
+
+            val data =
+                sensor.split("|")
+
+            if (data.size != 4) {
+                continue
+            }
+
+            val name = data[0]
+            val id = data[1]
+            val x = data[2].toFloatOrNull()
+            val y = data[3].toFloatOrNull()
+
+            if (x != null && y != null) {
+
+                addSensorMarkerWithoutSave(
+                    name,
+                    id,
+                    x,
+                    y
+                )
+            }
+        }
+
+
+    }
+private fun addSensorMarkerWithoutSave(
+    name: String,
+    id: String,
+    x: Float,
+    y: Float
+) {
+
+    val marker = ImageView(this)
+
+    marker.setImageResource(
+        R.drawable.normal
+    )
+
+    val size = 70
+
+    val params =
+        FrameLayout.LayoutParams(
+            size,
+            size
+        )
+
+    params.leftMargin =
+        (x * binding.imgMap.width).toInt() -
+                size / 2
+
+    params.topMargin =
+        (y * binding.imgMap.height).toInt() -
+                size / 2
+
+    binding.mapContainer.addView(
+        marker,
+        params
+    )
+
+    marker.setOnClickListener {
+
+        val intent = Intent(
+            this,
+            ControlActivity::class.java
+        )
+
+        intent.putExtra(
+            "sensor_name",
+            name
+        )
+
+        intent.putExtra(
+            "sensor_id",
+            id
+        )
+
+        intent.putExtra(
+            "status",
+            "NORMAL"
+        )
+
+        startActivity(intent)
+    }
+}
 }

@@ -16,7 +16,14 @@ class ControlActivity : AppCompatActivity() {
 
         setContentView(binding.root)
 
-        val status = intent.getStringExtra("status") ?: "NORMAL"
+        // 현재 센서의 상태
+        val status =
+            intent.getStringExtra("status") ?: "NORMAL"
+
+        // 현재 센서의 ID
+        val sensorId =
+            intent.getStringExtra("sensor_id")
+
 
         when (status) {
 
@@ -73,6 +80,7 @@ class ControlActivity : AppCompatActivity() {
         }
 
 
+        // 조치 완료 버튼
         binding.btnComplete.setOnClickListener {
 
             val intent = Intent(
@@ -80,9 +88,16 @@ class ControlActivity : AppCompatActivity() {
                 MainActivity::class.java
             )
 
+            // 조치 완료
             intent.putExtra(
                 "action_complete",
                 true
+            )
+
+            // 어떤 센서인지 전달
+            intent.putExtra(
+                "sensor_id",
+                sensorId
             )
 
             intent.addFlags(
