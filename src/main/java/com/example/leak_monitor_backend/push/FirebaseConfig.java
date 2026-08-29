@@ -11,10 +11,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-/**
- * firebase.credentials-path가 설정되어 있고 실제로 파일이 존재할 때만 FirebaseApp을 초기화합니다.
- * 자격증명이 없는 로컬 개발 환경에서도 앱 전체가 죽지 않고, FCM 발송 기능만 비활성화됩니다.
- */
 @Configuration
 @Slf4j
 public class FirebaseConfig {
@@ -23,7 +19,7 @@ public class FirebaseConfig {
     private String credentialsPath;
 
     @Bean
-    public FirebaseApp firebaseApp() throws IOException {
+    public FirebaseApp firebaseApp() {
         if (!FirebaseApp.getApps().isEmpty()) {
             return FirebaseApp.getInstance();
         }
@@ -41,10 +37,13 @@ public class FirebaseConfig {
 
         try (FileInputStream serviceAccount = new FileInputStream(file)) {
             FirebaseOptions options = FirebaseOptions.builder()
-                .setCredentials(GoogleCredentials.fromStream(serviceAccount))
-                .build();
-            log.info("FirebaseApp이 초기화되었습니다. FCM 푸시가 활성화됩니다.");
+                    .setCredentials(GoogleCredentials.fromStream(serviceAccount))
+                    .build();
+            log.info("FirebaseApp이 성공적으로 초기화되었습니다.");
             return FirebaseApp.initializeApp(options);
+        } catch (IOException e) {
+            log.error("Firebase 초기화 중 오류가 발생했습니다: {}", e.getMessage());
+            return null;
         }
     }
 }

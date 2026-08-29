@@ -1,36 +1,25 @@
 package com.example.leak_monitor_backend.map.entity;
 
-import com.example.leak_monitor_backend.sensor.entity.Sensor;
-import jakarta.persistence.CascadeType;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.OneToMany;
-import jakarta.persistence.Table;
-import java.util.ArrayList;
-import java.util.List;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import jakarta.persistence.*;
 
 @Entity
-@Table(name = "leak_maps")
-@Getter
-@Setter
-@NoArgsConstructor
-@AllArgsConstructor
-@Builder
+@Table(name = "maps")
 public class LeakMap {
-
     @Id
-    private String id;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
-    private String name;
-
+    private String title;
     private String imageUrl;
 
-    @OneToMany(mappedBy = "leakMap", cascade = CascadeType.ALL, orphanRemoval = true)
-    @Builder.Default
-    private List<Sensor> sensors = new ArrayList<>();
+    public LeakMap() {}
+
+    public LeakMap(String title, String imageUrl) {
+        this.title = title;
+        this.imageUrl = imageUrl;
+    }
+
+    public Long getId() { return id; }
+    public String getTitle() { return title; }
+    public String getImageUrl() { return imageUrl; }
 }

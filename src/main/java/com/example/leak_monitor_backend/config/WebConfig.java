@@ -1,4 +1,4 @@
-package com.example.leak_monitor_backend.Config;
+package com.example.leak_monitor_backend.config;
 
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;

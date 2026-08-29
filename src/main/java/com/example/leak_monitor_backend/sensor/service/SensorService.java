@@ -1,90 +1,118 @@
 package com.example.leak_monitor_backend.sensor.service;
 
-import com.example.leak_monitor_backend.common.exception.ResourceNotFoundException;
-import com.example.leak_monitor_backend.map.dto.MapDetailResponse;
-import com.example.leak_monitor_backend.map.entity.LeakMap;
-import com.example.leak_monitor_backend.map.repository.LeakMapRepository;
-import com.example.leak_monitor_backend.push.FcmService;
+import com.example.leak_monitor_backend.sensor.dto.SensorDataRequest;
+import com.example.leak_monitor_backend.sensor.entity.SensorActionLog;
+import com.example.leak_monitor_backend.sensor.repository.SensorActionLogRepository;
 import com.example.leak_monitor_backend.sensor.dto.SensorActionRequest;
-import com.example.leak_monitor_backend.sensor.dto.SensorActionResponse;
 import com.example.leak_monitor_backend.sensor.dto.SensorResponse;
 import com.example.leak_monitor_backend.sensor.dto.SensorStatusReportRequest;
 import com.example.leak_monitor_backend.sensor.entity.Sensor;
-import com.example.leak_monitor_backend.sensor.entity.SensorActionLog;
 import com.example.leak_monitor_backend.sensor.entity.SensorStatus;
 import com.example.leak_monitor_backend.sensor.mapper.SensorMapper;
-import com.example.leak_monitor_backend.sensor.repository.SensorActionLogRepository;
 import com.example.leak_monitor_backend.sensor.repository.SensorRepository;
-import java.time.Instant;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
 public class SensorService {
 
-    private final LeakMapRepository leakMapRepository;
     private final SensorRepository sensorRepository;
     private final SensorActionLogRepository sensorActionLogRepository;
-    private final FcmService fcmService;
+    private final SensorMapper sensorMapper;
 
+    // 1. ESP32 하드웨어 데이터 수신 처리 (통합 ESP32 HTTP POST 수신용)
+    @Transactional
+    public void processSensorData(SensorDataRequest request) {
+        LocalDateTime now = LocalDateTime.now();
+        String targetSensorId = "NODE_" + request.getNodeId();
+
+        // ESP32 state 매핑 (0: NORMAL, 1: WARM, 2: CRITICAL)
+        SensorStatus status = SensorStatus.NORMAL;
+        if (request.getState() != null) {
+            if (request.getState() == 1) status = SensorStatus.WARM;
+            else if (request.getState() == 2) status = SensorStatus.CRITICAL;
+        }
+
+        boolean isLeak = (status == SensorStatus.CRITICAL);
+
+        Sensor sensor = sensorRepository.findById(targetSensorId)
+                .orElseGet(() -> {
+                    Sensor s = new Sensor();
+                    s.setId(targetSensorId);
+                    s.setNodeId(request.getNodeId());
+                    s.setName("센서 노드 " + request.getNodeId());
+                    return s;
+                });
+
+        sensor.setVoltage(request.getVoltage());
+        sensor.setStatus(status);
+        sensor.setIsLeak(isLeak);
+        sensor.setUpdatedAt(now);
+
+        if (status != SensorStatus.NORMAL) {
+            sensor.setLastAnomalyAt(now);
+        }
+
+        sensorRepository.save(sensor);
+
+        // 액션 로그 기록
+        SensorActionLog log = new SensorActionLog(targetSensorId, request.getVoltage(), isLeak, now);
+        sensorActionLogRepository.save(log);
+    }
+
+    // 2. 전체 센서 목록 조회 (getAllSensors 에러 해결)
     @Transactional(readOnly = true)
-    public MapDetailResponse getMapDetail(String mapId) {
-        LeakMap map = leakMapRepository.findById(mapId)
-            .orElseThrow(() -> new ResourceNotFoundException("지도를 찾을 수 없습니다: " + mapId));
-        return SensorMapper.toResponse(map);
+    public List<SensorResponse> getAllSensors() {
+        return sensorRepository.findAll().stream()
+                .map(sensorMapper::toResponse)
+                .collect(Collectors.toList());
     }
 
+    // 3. 센서 상태 보고 및 수동 등록 (registerOrUpdateSensor 및 getSensorId 에러 해결)
     @Transactional
-    public SensorActionResponse completeAction(String sensorId, SensorActionRequest request) {
-        Sensor sensor = sensorRepository.findById(sensorId)
-            .orElseThrow(() -> new ResourceNotFoundException("센서를 찾을 수 없습니다: " + sensorId));
+    public SensorResponse registerOrUpdateSensor(SensorStatusReportRequest request) {
+        String targetId = request.getSensorId(); // DTO의 getSensorId() 사용
 
-        sensorActionLogRepository.save(SensorActionLog.builder()
-            .sensorId(sensorId)
-            .note(request.note())
-            .clientActionTakenAt(request.actionTakenAt())
-            .loggedAt(Instant.now())
-            .build());
+        Sensor sensor = sensorRepository.findById(targetId)
+                .orElseGet(() -> {
+                    Sensor s = new Sensor();
+                    s.setId(targetId);
+                    return s;
+                });
 
-        sensor.setStatus(SensorStatus.NORMAL);
-        sensor.setUpdatedAt(Instant.now());
-        sensorRepository.save(sensor);
+        if (request.getName() != null) sensor.setName(request.getName());
+        if (request.getXPercent() != null) sensor.setXPercent(request.getXPercent());
+        if (request.getYPercent() != null) sensor.setYPercent(request.getYPercent());
+        if (request.getStatus() != null) sensor.setStatus(request.getStatus());
 
-        return new SensorActionResponse(sensor.getId(), sensor.getStatus().name(), "조치가 완료되었습니다.");
+        sensor.setUpdatedAt(LocalDateTime.now());
+        Sensor saved = sensorRepository.save(sensor);
+
+        return sensorMapper.toResponse(saved);
     }
 
-    /**
-     * STM32 보드가 자체 판정한 상태를 보고하는 엔드포인트. 임계값 계산은 보드에서
-     * 이미 끝났으므로 서버는 전달받은 status를 그대로 신뢰합니다.
-     * 상태가 실제로 바뀌었고 새 상태가 WARNING/CRITICAL일 때만 FCM 알림을 보냅니다
-     * (같은 상태를 반복 보고해도 알림이 중복 발송되지 않도록).
-     */
+    // 4. 센서 제어 및 액션 처리 (processAction 에러 해결)
     @Transactional
-    public SensorResponse reportStatus(String sensorId, SensorStatusReportRequest request) {
-        Sensor sensor = sensorRepository.findById(sensorId)
-            .orElseThrow(() -> new ResourceNotFoundException("센서를 찾을 수 없습니다: " + sensorId));
+    public SensorResponse processAction(SensorActionRequest request) {
+        String targetId = request.getSensorId(); // DTO의 getSensorId() 사용
 
-        SensorStatus previousStatus = sensor.getStatus();
-        SensorStatus newStatus = SensorStatus.fromWireValue(request.status());
+        Sensor sensor = sensorRepository.findById(targetId)
+                .orElseThrow(() -> new IllegalArgumentException("해당 센서를 찾을 수 없습니다: " + targetId));
 
-        if (request.value() != null) {
-            sensor.setLastValue(request.value());
-        }
-        if (request.unit() != null) {
-            sensor.setUnit(request.unit());
-        }
-        sensor.setStatus(newStatus);
-        sensor.setUpdatedAt(Instant.now());
-        sensorRepository.save(sensor);
+        LocalDateTime now = LocalDateTime.now();
+        sensor.setUpdatedAt(now);
+        Sensor saved = sensorRepository.save(sensor);
 
-        boolean becameAlerting = newStatus != previousStatus
-            && (newStatus == SensorStatus.WARNING || newStatus == SensorStatus.CRITICAL);
-        if (becameAlerting) {
-            fcmService.sendLeakAlert(sensor);
-        }
+        // 액션 로그 기록
+        SensorActionLog log = new SensorActionLog(targetId, sensor.getVoltage(), sensor.getIsLeak(), now);
+        sensorActionLogRepository.save(log);
 
-        return SensorMapper.toResponse(sensor);
+        return sensorMapper.toResponse(saved);
     }
 }

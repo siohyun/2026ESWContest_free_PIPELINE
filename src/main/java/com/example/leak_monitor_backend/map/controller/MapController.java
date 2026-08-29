@@ -1,25 +1,24 @@
 package com.example.leak_monitor_backend.map.controller;
 
 import com.example.leak_monitor_backend.map.dto.MapDetailResponse;
-import com.example.leak_monitor_backend.sensor.service.SensorService;
-import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import com.example.leak_monitor_backend.map.entity.LeakMap;
+import com.example.leak_monitor_backend.map.repository.LeakMapRepository;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 
-/**
- * Android ApiService.getMapDetail(mapId) 대응.
- */
 @RestController
-@RequestMapping("/maps")
-@RequiredArgsConstructor
+@RequestMapping("/api/maps")
 public class MapController {
+    private final LeakMapRepository mapRepository;
 
-    private final SensorService sensorService;
+    public MapController(LeakMapRepository mapRepository) {
+        this.mapRepository = mapRepository;
+    }
 
-    @GetMapping("/{mapId}")
-    public MapDetailResponse getMap(@PathVariable String mapId) {
-        return sensorService.getMapDetail(mapId);
+    @GetMapping("/{id}")
+    public ResponseEntity<MapDetailResponse> getMapDetail(@PathVariable Long id) {
+        LeakMap map = mapRepository.findById(id)
+                .orElse(new LeakMap("1층 배수도 메인 관제", "https://via.placeholder.com/600"));
+        return ResponseEntity.ok(new MapDetailResponse(map.getId(), map.getTitle(), map.getImageUrl()));
     }
 }

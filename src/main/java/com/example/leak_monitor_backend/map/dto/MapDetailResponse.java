@@ -1,15 +1,17 @@
 package com.example.leak_monitor_backend.map.dto;
 
-import com.example.leak_monitor_backend.sensor.dto.SensorResponse;
-import java.util.List;
+public class MapDetailResponse {
+    private Long id;
+    private String title;
+    private String imageUrl;
 
-/**
- * Android MapDetailDto와 필드명이 정확히 일치해야 합니다.
- */
-public record MapDetailResponse(
-    String mapId,
-    String mapName,
-    String mapImageUrl,
-    List<SensorResponse> sensors
-) {
+    public MapDetailResponse(Long id, String title, String imageUrl) {
+        this.id = id;
+        this.title = title;
+        this.imageUrl = imageUrl;
+    }
+
+    public Long getId() { return id; }
+    public String getTitle() { return title; }
+    public String getImageUrl() { return imageUrl; }
 }

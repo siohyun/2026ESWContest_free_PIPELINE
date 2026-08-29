@@ -1,12 +1,11 @@
 package com.example.leak_monitor_backend.sensor.dto;
 
-import jakarta.validation.constraints.NotBlank;
+public class SensorActionRequest {
+    private String sensorId;
+    private String actionDetails;
 
-/**
- * Android SensorActionRequestDto와 필드명이 정확히 일치해야 합니다.
- */
-public record SensorActionRequest(
-    @NotBlank(message = "조치 내용 메모는 비어 있을 수 없습니다.") String note,
-    String actionTakenAt
-) {
+    public String getSensorId() { return sensorId; }
+    public void setSensorId(String sensorId) { this.sensorId = sensorId; }
+    public String getActionDetails() { return actionDetails; }
+    public void setActionDetails(String actionDetails) { this.actionDetails = actionDetails; }
 }

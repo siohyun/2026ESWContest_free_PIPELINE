@@ -1,8 +1,8 @@
 package com.example.leak_monitor_backend.device.dto;
 
-import jakarta.validation.constraints.NotBlank;
+public class DeviceTokenRequest {
+    private String token;
 
-public record DeviceTokenRequest(
-    @NotBlank(message = "FCM 토큰은 비어 있을 수 없습니다.") String token
-) {
+    public String getToken() { return token; }
+    public void setToken(String token) { this.token = token; }
 }

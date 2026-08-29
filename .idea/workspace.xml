@@ -4,7 +4,76 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="dd104e99-d6ed-430b-9be8-e850bef42084" name="변경" comment="" />
+    <list default="true" id="dd104e99-d6ed-430b-9be8-e850bef42084" name="변경" comment="">
+      <change afterPath="$PROJECT_DIR$/src/main/java/com/example/leak_monitor_backend/sensor/controller/SensorApiController.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/com/example/leak_monitor_backend/sensor/dto/SensorDataRequest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gradle/9.5.1/executionHistory/executionHistory.bin" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/9.5.1/executionHistory/executionHistory.bin" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gradle/9.5.1/executionHistory/executionHistory.lock" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/9.5.1/executionHistory/executionHistory.lock" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gradle/9.5.1/fileHashes/fileHashes.bin" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/9.5.1/fileHashes/fileHashes.bin" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gradle/9.5.1/fileHashes/fileHashes.lock" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/9.5.1/fileHashes/fileHashes.lock" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gradle/9.5.1/fileHashes/resourceHashesCache.bin" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/9.5.1/fileHashes/resourceHashesCache.bin" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gradle/buildOutputCleanup/buildOutputCleanup.lock" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/buildOutputCleanup/buildOutputCleanup.lock" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gradle/buildOutputCleanup/outputFiles.bin" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/buildOutputCleanup/outputFiles.bin" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gradle/file-system.probe" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/file-system.probe" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/classes/java/main/com/example/leak_monitor_backend/Config/WebConfig.class" beforeDir="false" afterPath="$PROJECT_DIR$/build/classes/java/main/com/example/leak_monitor_backend/Config/WebConfig.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/classes/java/main/com/example/leak_monitor_backend/data/DataInitializer.class" beforeDir="false" afterPath="$PROJECT_DIR$/build/classes/java/main/com/example/leak_monitor_backend/data/DataInitializer.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/classes/java/main/com/example/leak_monitor_backend/device/controller/DeviceController.class" beforeDir="false" afterPath="$PROJECT_DIR$/build/classes/java/main/com/example/leak_monitor_backend/device/controller/DeviceController.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/classes/java/main/com/example/leak_monitor_backend/device/dto/DeviceTokenRequest.class" beforeDir="false" afterPath="$PROJECT_DIR$/build/classes/java/main/com/example/leak_monitor_backend/device/dto/DeviceTokenRequest.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/classes/java/main/com/example/leak_monitor_backend/device/entity/DeviceToken$DeviceTokenBuilder.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/classes/java/main/com/example/leak_monitor_backend/device/entity/DeviceToken.class" beforeDir="false" afterPath="$PROJECT_DIR$/build/classes/java/main/com/example/leak_monitor_backend/device/entity/DeviceToken.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/classes/java/main/com/example/leak_monitor_backend/device/repository/DeviceTokenRepository.class" beforeDir="false" afterPath="$PROJECT_DIR$/build/classes/java/main/com/example/leak_monitor_backend/device/repository/DeviceTokenRepository.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/classes/java/main/com/example/leak_monitor_backend/device/service/DeviceTokenService.class" beforeDir="false" afterPath="$PROJECT_DIR$/build/classes/java/main/com/example/leak_monitor_backend/device/service/DeviceTokenService.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/classes/java/main/com/example/leak_monitor_backend/map/controller/MapController.class" beforeDir="false" afterPath="$PROJECT_DIR$/build/classes/java/main/com/example/leak_monitor_backend/map/controller/MapController.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/classes/java/main/com/example/leak_monitor_backend/map/dto/MapDetailResponse.class" beforeDir="false" afterPath="$PROJECT_DIR$/build/classes/java/main/com/example/leak_monitor_backend/map/dto/MapDetailResponse.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/classes/java/main/com/example/leak_monitor_backend/map/entity/LeakMap$LeakMapBuilder.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/classes/java/main/com/example/leak_monitor_backend/map/entity/LeakMap.class" beforeDir="false" afterPath="$PROJECT_DIR$/build/classes/java/main/com/example/leak_monitor_backend/map/entity/LeakMap.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/classes/java/main/com/example/leak_monitor_backend/map/repository/LeakMapRepository.class" beforeDir="false" afterPath="$PROJECT_DIR$/build/classes/java/main/com/example/leak_monitor_backend/map/repository/LeakMapRepository.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/classes/java/main/com/example/leak_monitor_backend/push/FcmService.class" beforeDir="false" afterPath="$PROJECT_DIR$/build/classes/java/main/com/example/leak_monitor_backend/push/FcmService.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/classes/java/main/com/example/leak_monitor_backend/push/FirebaseConfig.class" beforeDir="false" afterPath="$PROJECT_DIR$/build/classes/java/main/com/example/leak_monitor_backend/push/FirebaseConfig.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/classes/java/main/com/example/leak_monitor_backend/sensor/controller/SensorController.class" beforeDir="false" afterPath="$PROJECT_DIR$/build/classes/java/main/com/example/leak_monitor_backend/sensor/controller/SensorController.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/classes/java/main/com/example/leak_monitor_backend/sensor/dto/SensorActionRequest.class" beforeDir="false" afterPath="$PROJECT_DIR$/build/classes/java/main/com/example/leak_monitor_backend/sensor/dto/SensorActionRequest.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/classes/java/main/com/example/leak_monitor_backend/sensor/dto/SensorActionResponse.class" beforeDir="false" afterPath="$PROJECT_DIR$/build/classes/java/main/com/example/leak_monitor_backend/sensor/dto/SensorActionResponse.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/classes/java/main/com/example/leak_monitor_backend/sensor/dto/SensorResponse.class" beforeDir="false" afterPath="$PROJECT_DIR$/build/classes/java/main/com/example/leak_monitor_backend/sensor/dto/SensorResponse.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/classes/java/main/com/example/leak_monitor_backend/sensor/dto/SensorStatusReportRequest.class" beforeDir="false" afterPath="$PROJECT_DIR$/build/classes/java/main/com/example/leak_monitor_backend/sensor/dto/SensorStatusReportRequest.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/classes/java/main/com/example/leak_monitor_backend/sensor/entity/Sensor$SensorBuilder.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/classes/java/main/com/example/leak_monitor_backend/sensor/entity/Sensor.class" beforeDir="false" afterPath="$PROJECT_DIR$/build/classes/java/main/com/example/leak_monitor_backend/sensor/entity/Sensor.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/classes/java/main/com/example/leak_monitor_backend/sensor/entity/SensorActionLog$SensorActionLogBuilder.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/classes/java/main/com/example/leak_monitor_backend/sensor/entity/SensorActionLog.class" beforeDir="false" afterPath="$PROJECT_DIR$/build/classes/java/main/com/example/leak_monitor_backend/sensor/entity/SensorActionLog.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/classes/java/main/com/example/leak_monitor_backend/sensor/entity/SensorStatus.class" beforeDir="false" afterPath="$PROJECT_DIR$/build/classes/java/main/com/example/leak_monitor_backend/sensor/entity/SensorStatus.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/classes/java/main/com/example/leak_monitor_backend/sensor/mapper/SensorMapper.class" beforeDir="false" afterPath="$PROJECT_DIR$/build/classes/java/main/com/example/leak_monitor_backend/sensor/mapper/SensorMapper.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/classes/java/main/com/example/leak_monitor_backend/sensor/repository/SensorRepository.class" beforeDir="false" afterPath="$PROJECT_DIR$/build/classes/java/main/com/example/leak_monitor_backend/sensor/repository/SensorRepository.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/classes/java/main/com/example/leak_monitor_backend/sensor/service/SensorService.class" beforeDir="false" afterPath="$PROJECT_DIR$/build/classes/java/main/com/example/leak_monitor_backend/sensor/service/SensorService.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/reports/problems/problems-report.html" beforeDir="false" afterPath="$PROJECT_DIR$/build/reports/problems/problems-report.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/resources/main/application.properties" beforeDir="false" afterPath="$PROJECT_DIR$/build/resources/main/application.properties" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/tmp/compileJava/previous-compilation-data.bin" beforeDir="false" afterPath="$PROJECT_DIR$/build/tmp/compileJava/previous-compilation-data.bin" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/leak_monitor_backend/Config/WebConfig.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/example/leak_monitor_backend/config/WebConfig.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/leak_monitor_backend/data/DataInitializer.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/example/leak_monitor_backend/data/DataInitializer.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/leak_monitor_backend/device/controller/DeviceController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/example/leak_monitor_backend/device/controller/DeviceController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/leak_monitor_backend/device/dto/DeviceTokenRequest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/example/leak_monitor_backend/device/dto/DeviceTokenRequest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/leak_monitor_backend/device/entity/DeviceToken.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/example/leak_monitor_backend/device/entity/DeviceToken.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/leak_monitor_backend/device/repository/DeviceTokenRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/example/leak_monitor_backend/device/repository/DeviceTokenRepository.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/leak_monitor_backend/device/service/DeviceTokenService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/example/leak_monitor_backend/device/service/DeviceTokenService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/leak_monitor_backend/map/controller/MapController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/example/leak_monitor_backend/map/controller/MapController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/leak_monitor_backend/map/dto/MapDetailResponse.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/example/leak_monitor_backend/map/dto/MapDetailResponse.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/leak_monitor_backend/map/entity/LeakMap.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/example/leak_monitor_backend/map/entity/LeakMap.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/leak_monitor_backend/map/repository/LeakMapRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/example/leak_monitor_backend/map/repository/LeakMapRepository.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/leak_monitor_backend/push/FcmService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/example/leak_monitor_backend/push/FcmService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/leak_monitor_backend/push/FirebaseConfig.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/example/leak_monitor_backend/push/FirebaseConfig.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/leak_monitor_backend/sensor/controller/SensorController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/example/leak_monitor_backend/sensor/controller/SensorController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/leak_monitor_backend/sensor/dto/SensorActionRequest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/example/leak_monitor_backend/sensor/dto/SensorActionRequest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/leak_monitor_backend/sensor/dto/SensorActionResponse.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/example/leak_monitor_backend/sensor/dto/SensorActionResponse.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/leak_monitor_backend/sensor/dto/SensorResponse.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/example/leak_monitor_backend/sensor/dto/SensorResponse.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/leak_monitor_backend/sensor/dto/SensorStatusReportRequest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/example/leak_monitor_backend/sensor/dto/SensorStatusReportRequest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/leak_monitor_backend/sensor/entity/Sensor.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/example/leak_monitor_backend/sensor/entity/Sensor.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/leak_monitor_backend/sensor/entity/SensorActionLog.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/example/leak_monitor_backend/sensor/entity/SensorActionLog.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/leak_monitor_backend/sensor/entity/SensorStatus.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/example/leak_monitor_backend/sensor/entity/SensorStatus.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/leak_monitor_backend/sensor/mapper/SensorMapper.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/example/leak_monitor_backend/sensor/mapper/SensorMapper.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/leak_monitor_backend/sensor/repository/SensorActionLogRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/example/leak_monitor_backend/sensor/repository/SensorActionLogRepository.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/leak_monitor_backend/sensor/repository/SensorRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/example/leak_monitor_backend/sensor/repository/SensorRepository.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/leak_monitor_backend/sensor/service/SensorService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/example/leak_monitor_backend/sensor/service/SensorService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/application.properties" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/application.properties" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -39,6 +108,21 @@
       </list>
     </option>
   </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="GitHubPullRequestSearchHistory">{
+  &quot;lastFilter&quot;: {
+    &quot;state&quot;: &quot;OPEN&quot;,
+    &quot;assignee&quot;: &quot;siohyun&quot;
+  }
+}</component>
+  <component name="GithubPullRequestsUISettings">{
+  &quot;selectedUrlAndAccountId&quot;: {
+    &quot;url&quot;: &quot;https://github.com/siohyun/2026ESWContest_free_000.git&quot;,
+    &quot;accountId&quot;: &quot;b199a7af-03cf-4f9f-a8b1-38dce904ba58&quot;
+  }
+}</component>
   <component name="GradleScriptDefinitionsStorage" workingDir="$PROJECT_DIR$" gradleHome="C:\Users\seohy\.gradle\wrapper\dists\gradle-9.5.1-bin\iq79hdu3mqx29lgffhp8bfmx\gradle-9.5.1" javaHome="C:\Program Files\Java\jdk-23" gradleVersion="9.5.1" />
   <component name="ProjectColorInfo">{
   &quot;associatedIndex&quot;: 4
@@ -48,28 +132,36 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "Gradle.leak-monitor-backend 빌드.executor": "Run",
-    "ModuleVcsDetector.initialDetectionPerformed": "true",
-    "RequestMappingsPanelOrder0": "0",
-    "RequestMappingsPanelOrder1": "1",
-    "RequestMappingsPanelWidth0": "75",
-    "RequestMappingsPanelWidth1": "75",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252": "true",
-    "Spring Boot.LeakMonitorBackendApplication.executor": "Run",
-    "ignore.virus.scanning.warn.message": "true",
-    "kotlin-language-version-configured": "true",
-    "last_opened_file_path": "C:/Users/seohy/Desktop/programing/leak-monitor-backend/build.gradle.kts",
-    "node.js.detected.package.eslint": "true",
-    "node.js.detected.package.tslint": "true",
-    "node.js.selected.package.eslint": "(autodetect)",
-    "node.js.selected.package.tslint": "(autodetect)",
-    "nodejs_package_manager_path": "npm",
-    "vue.rearranger.settings.migration": "true"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;Gradle.leak-monitor-backend 빌드.executor&quot;: &quot;Run&quot;,
+    &quot;ModuleVcsDetector.initialDetectionPerformed&quot;: &quot;true&quot;,
+    &quot;RequestMappingsPanelOrder0&quot;: &quot;0&quot;,
+    &quot;RequestMappingsPanelOrder1&quot;: &quot;1&quot;,
+    &quot;RequestMappingsPanelWidth0&quot;: &quot;75&quot;,
+    &quot;RequestMappingsPanelWidth1&quot;: &quot;75&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
+    &quot;Spring Boot.LeakMonitorBackendApplication.executor&quot;: &quot;Run&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;dev/backend&quot;,
+    &quot;ignore.virus.scanning.warn.message&quot;: &quot;true&quot;,
+    &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
+    &quot;last_opened_file_path&quot;: &quot;C:/Users/seohy/Desktop/2026ESWContest_free_/backend/leak-monitor-backend/build.gradle.kts&quot;,
+    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
+    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
+    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;project.propVCSSupport.DirectoryMappings&quot;,
+    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
+  },
+  &quot;keyToStringList&quot;: {
+    &quot;DatabaseDriversLRU&quot;: [
+      &quot;h2&quot;
+    ]
   }
-}]]></component>
+}</component>
   <component name="RunManager">
     <configuration name="LeakMonitorBackendApplication" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot" nameIsGenerated="true">
       <module name="leak-monitor-backend.main" />
@@ -97,6 +189,9 @@
       <workItem from="1787548548697" duration="1002000" />
       <workItem from="1787551451193" duration="3095000" />
       <workItem from="1787646355565" duration="1755000" />
+      <workItem from="1787648176877" duration="1364000" />
+      <workItem from="1787891452765" duration="11105000" />
+      <workItem from="1787998942567" duration="692000" />
     </task>
     <servers />
   </component>

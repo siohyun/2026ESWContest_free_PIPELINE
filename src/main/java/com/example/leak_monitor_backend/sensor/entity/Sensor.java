@@ -1,68 +1,59 @@
 package com.example.leak_monitor_backend.sensor.entity;
 
-import com.example.leak_monitor_backend.map.entity.LeakMap;
-import jakarta.persistence.CollectionTable;
-import jakarta.persistence.Column;
-import jakarta.persistence.ElementCollection;
-import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OrderColumn;
-import jakarta.persistence.Table;
-import java.time.Instant;
-import java.util.ArrayList;
-import java.util.List;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
+import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+
 @Entity
-@Table(name = "sensors")
+@Table(name = "SENSORS")
 @Getter
 @Setter
 @NoArgsConstructor
-@AllArgsConstructor
-@Builder
 public class Sensor {
 
     @Id
-    private String id;
+    @Column(name = "ID")
+    private String id; // 예: "NODE_1" 또는 "SENSOR_01"
+
+    @Column(name = "NODE_ID", unique = true)
+    private Integer nodeId; // ESP32 노드 ID (1, 2 등)
 
     private String name;
+    private Float xPercent;
+    private Float yPercent;
 
-    private float relativeX;
-
-    private float relativeY;
+    private Double voltage; // ESP32 측정 전압
 
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
-    private SensorStatus status;
+    private SensorStatus status; // NORMAL, WARM, CRITICAL
 
-    private Double lastValue;
+    private String location;
+    private Boolean isLeak;
 
-    private String unit;
+    private LocalDateTime updatedAt;
+    private LocalDateTime lastAnomalyAt;
 
-    private Instant updatedAt;
+    // 1. DataInitializer.java 해결용 커스텀 생성자 (String, String, float, float, SensorStatus, String)
+    public Sensor(String id, String name, float xPercent, float yPercent, SensorStatus status, String location) {
+        this.id = id;
+        this.name = name;
+        this.xPercent = xPercent;
+        this.yPercent = yPercent;
+        this.status = status;
+        this.location = location;
+        this.isLeak = (status == SensorStatus.CRITICAL || status == SensorStatus.WARM);
+        this.updatedAt = LocalDateTime.now();
+    }
 
-    @Column(length = 1000)
-    private String description;
-
-    private String valveImageUrl;
-
-    @ElementCollection
-    @CollectionTable(name = "sensor_emergency_instructions", joinColumns = @JoinColumn(name = "sensor_id"))
-    @OrderColumn(name = "step_order")
-    @Column(name = "instruction", length = 500)
-    @Builder.Default
-    private List<String> emergencyInstructions = new ArrayList<>();
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "map_id")
-    private LeakMap leakMap;
+    // 2. SensorMapper.java 해결용 (String 반환)
+    public String getLastReceivedTime() {
+        if (this.updatedAt == null) {
+            return LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+        }
+        return this.updatedAt.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+    }
 }

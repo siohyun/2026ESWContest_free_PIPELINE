@@ -1,11 +1,14 @@
 package com.example.leak_monitor_backend.sensor.dto;
 
-/**
- * Android SensorActionResponseDto와 필드명이 정확히 일치해야 합니다.
- */
-public record SensorActionResponse(
-    String sensorId,
-    String status,
-    String message
-) {
+public class SensorActionResponse {
+    private boolean success;
+    private String message;
+
+    public SensorActionResponse(boolean success, String message) {
+        this.success = success;
+        this.message = message;
+    }
+
+    public boolean isSuccess() { return success; }
+    public String getMessage() { return message; }
 }
