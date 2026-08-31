@@ -9,13 +9,14 @@
     android:layout_height="match_parent"
     tools:context=".MainActivity">
 
-    <!-- 사용자가 업로드한 지도 -->
+    <!-- 지도 -->
     <FrameLayout
         android:id="@+id/mapContainer"
         android:layout_width="0dp"
-        android:layout_height="350dp"
-        android:layout_margin="16dp"
+        android:layout_height="0dp"
+        android:layout_margin="8dp"
         app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent">
 
@@ -27,20 +28,4 @@
             android:contentDescription="현장 지도" />
 
     </FrameLayout>
-
-
-    <!-- 현재 수위 상태 이미지 -->
-    <ImageView
-        android:id="@+id/imgWater"
-        android:layout_width="0dp"
-        android:layout_height="250dp"
-        android:layout_marginStart="16dp"
-        android:layout_marginEnd="16dp"
-        android:layout_marginTop="16dp"
-        android:scaleType="fitCenter"
-        app:layout_constraintTop_toBottomOf="@id/mapContainer"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:srcCompat="@drawable/normal" />
-
 </androidx.constraintlayout.widget.ConstraintLayout>
