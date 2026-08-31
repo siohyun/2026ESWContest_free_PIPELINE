@@ -5,27 +5,27 @@
   * @brief          : 관제 STM32 - ESP32 CSV 프로토콜 연동 (LED + 부저 경보)
   *                   - 수신 포맷: "node_id,voltage,state\r\n" (예: "1,2.55,1\r\n")
   *                   - Normal (0): Green LED ON / 무음
-  *                   - Warning (1): Orange LED ON / 1kHz 간헐 비프
-  *                   - Danger (2): Red LED ON / 3.5kHz 긴급 비프
+  *                   - Warning (1): Orange LED ON / 1.2kHz 비프
+  *                   - Danger (2): Red LED ON / 3.8kHz 비프
   *
   * PIN MAP
   *  OLED : 128x64 SPI
-  *   D0  = PA5  -> SPI1_SCK
-  *   D1  = PA7  -> SPI1_MOSI
-  *   RES = PB8
-  *   DC  = PC7
-  *   CS  = PB6
+  *    D0  = PA5  -> SPI1_SCK
+  *    D1  = PA7  -> SPI1_MOSI
+  *    RES = PB8
+  *    DC  = PC7
+  *    CS  = PB6
   *
   *  BUZZER = D7 = PA8   (TIM1_CH1 PWM, 가변 주파수)
   *  BUTTON = A3 = PB0   (EXTI0)
   *
   *  ESP32 Gateway
-  *   D2 = PA10 = USART1_RX
+  *    D2 = PA10 = USART1_RX
   *
   *  LED (Active-Low 기준: LOW 점등 / HIGH 소등)
-  *   RED    = A2 = PA4
-  *   ORANGE = A1 = PA1
-  *   GREEN  = A0 = PA0
+  *    RED    = A2 = PA4
+  *    ORANGE = A1 = PA1
+  *    GREEN  = A0 = PA0
   ******************************************************************************
   * @attention
   *
@@ -124,6 +124,8 @@ volatile int parsed_state = 0;
 // Non-blocking 부저 제어 변수
 uint32_t last_buzzer_tick = 0;
 uint8_t buzzer_state = 0;
+SystemState_t prev_buzzer_state = STATE_NORMAL;
+uint32_t critical_hold_until = 0; // CRITICAL 최소 지속 시간 보장용
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -553,12 +555,34 @@ void Set_LED_State(SystemState_t state)
     }
 }
 
-// 상태별 부저 비프음 처리 (Non-blocking 주기 제어)
+// 상태별 부저 비프음 처리 (Non-blocking: 초고속 70ms 비프, 동일 빈도 / CRITICAL 우선권 보장 + 500ms 래치 적용)
 void Process_Buzzer_Alarm(void)
 {
     uint32_t now = HAL_GetTick();
+    SystemState_t active_state = current_state;
 
-    switch (current_state)
+    // 1. CRITICAL이 단 한 번이라도 들어오면 500ms 동안 CRITICAL 상태 유지
+    if (current_state == STATE_CRITICAL)
+    {
+        critical_hold_until = now + 500; // 약 3~4회 비프 보장
+    }
+
+    if (now < critical_hold_until)
+    {
+        active_state = STATE_CRITICAL;
+    }
+
+    // 2. 상태가 전환된 순간(특히 WARN -> CRITICAL) 즉시 가로채어 발음 시작
+    if (active_state != prev_buzzer_state)
+    {
+        prev_buzzer_state = active_state;
+        Buzzer_Off();
+        buzzer_state = 0;
+        last_buzzer_tick = 0; // 대기 시간 리셋하여 아래 조건문에서 즉시 ON되도록 유도
+    }
+
+    // 3. 상태별 비프 출력
+    switch (active_state)
     {
         case STATE_NORMAL:
             if (buzzer_state)
@@ -569,35 +593,27 @@ void Process_Buzzer_Alarm(void)
             break;
 
         case STATE_WARN:
-            // 1000Hz 저주파수: 200ms ON / 800ms OFF (느린 비프)
-            if (buzzer_state == 0 && (now - last_buzzer_tick >= 800))
+        case STATE_CRITICAL:
+        {
+            // 확연한 주파수 대비 (WARN: 1200Hz 저음 / CRITICAL: 3800Hz 날카로운 고음)
+            uint32_t freq = (active_state == STATE_CRITICAL) ? 3800 : 1200;
+
+            if (buzzer_state == 0 && (now - last_buzzer_tick >= 70))
             {
-                Buzzer_On(1000);
+                Buzzer_On(freq);
                 buzzer_state = 1;
                 last_buzzer_tick = now;
             }
-            else if (buzzer_state == 1 && (now - last_buzzer_tick >= 200))
+            else if (buzzer_state == 1 && (now - last_buzzer_tick >= 70))
             {
                 Buzzer_Off();
                 buzzer_state = 0;
                 last_buzzer_tick = now;
             }
             break;
+        }
 
-        case STATE_CRITICAL:
-            // 3500Hz 고주파수: 100ms ON / 100ms OFF (빠른 긴급 비프)
-            if (buzzer_state == 0 && (now - last_buzzer_tick >= 100))
-            {
-                Buzzer_On(3500);
-                buzzer_state = 1;
-                last_buzzer_tick = now;
-            }
-            else if (buzzer_state == 1 && (now - last_buzzer_tick >= 100))
-            {
-                Buzzer_Off();
-                buzzer_state = 0;
-                last_buzzer_tick = now;
-            }
+        default:
             break;
     }
 }
@@ -685,19 +701,31 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
     }
 }
 
-// 부저 PWM 가변 주파수 제어 함수 (TIM1 CH1 / PA8)
 void Buzzer_On(uint32_t freq)
 {
     if (freq == 0) return;
-    uint32_t arr = 1000000 / freq - 1;
+
+    // 1. 주파수에 따른 ARR 및 50% 듀티비 계산 (TIM1 카운터 클록 1MHz 기준)
+    uint32_t arr = (1000000 / freq) - 1;
+
+    // 2. 타이머 주기 및 듀티비 갱신
     __HAL_TIM_SET_AUTORELOAD(&htim1, arr);
-    __HAL_TIM_SET_COMPARE(&htim1, TIM_CHANNEL_1, arr / 2);
+    __HAL_TIM_SET_COMPARE(&htim1, TIM_CHANNEL_1, (arr + 1) / 2);
+
+    // 3. 카운터를 0으로 리셋하여 즉시 새 주기 반영
+    __HAL_TIM_SET_COUNTER(&htim1, 0);
+
+    // 4. PWM 시작 및 TIM1 Main Output(MOE) 강제 활성화
     HAL_TIM_PWM_Start(&htim1, TIM_CHANNEL_1);
+    __HAL_TIM_MOE_ENABLE(&htim1);
 }
 
 void Buzzer_Off(void)
 {
+    // PWM 출력 정지 및 MOE 비활성화
+    __HAL_TIM_MOE_DISABLE(&htim1);
     HAL_TIM_PWM_Stop(&htim1, TIM_CHANNEL_1);
+    __HAL_TIM_SET_COMPARE(&htim1, TIM_CHANNEL_1, 0);
 }
 
 // u8g2 하드웨어 SPI 통신 바이트 콜백
