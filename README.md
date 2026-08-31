@@ -8,8 +8,8 @@
 [STM32 / ESP32] --(MQTT/REST)--> [Spring Boot Backend] --(FCM / REST)--> [Android App]
 
 ## 📂 프로젝트 구조
-- `/firmware-stm32`: 피에조 필름 센서 신호 수집 및 임계치 판정 (STM32)
-- `/firmware-esp32`: Wi-Fi 통신 및 OLED/LED 상태 표시 (ESP32)
+- `/firmware-stm32`: OLED/LED 상태 표시 (STM32)
+- `/firmware-esp32`: Wi-Fi 통신 및 피에조 필름 센서 신호 수집 및 임계치 판정 (ESP32)
 - `/backend`: REST API 및 FCM 알림 처리 백엔드 (Spring Boot)
 - `/android`: 배수도 도면 기반 실시간 관제 및 푸시 알림 앱 (Android Compose)
 
