@@ -6,12 +6,12 @@
 #include <queue>
 
 // ── 1. 설정 ──────────────────────────────────────────────
-const char* WIFI_SSID     = "KT_GiGA_249C";
-const char* WIFI_PASSWORD = "3ad64kg819";
-const char* BACKEND_URL = "https://evasive-untimed-alright.ngrok-free.dev/api/sensors/data";
-#define WIFI_CHANNEL 11
+const char* WIFI_SSID     = "YOUR_WIFI_SSID";
+const char* WIFI_PASSWORD = "YOUR_WIFI_PASSWORD";
+const char* BACKEND_URL = "https://your-backend-url.com/api/sensors/data";
+#define WIFI_CHANNEL 10
 
-// 송신측과 완전히 동일한 구조체
+// 송신측 동일 구조체
 typedef struct struct_message {
     int node_id;
     float voltage;
@@ -30,7 +30,6 @@ void HttpTask(void * pvParameters) {
         struct_message msg;
         bool hasData = false;
 
-        // 큐에서 데이터 안전하게 꺼내기
         if (xSemaphoreTake(queueMutex, portMAX_DELAY)) {
             if (!httpQueue.empty()) {
                 msg = httpQueue.front();
@@ -40,7 +39,7 @@ void HttpTask(void * pvParameters) {
             xSemaphoreGive(queueMutex);
         }
 
-        // 백엔드 전송 (서버가 느리거나 끊겨도 Core 1 수신/STM32 전송 속도에는 0ms도 영향 안 줌)
+        // 백엔드 전송
         if (hasData) {
             if (WiFi.status() == WL_CONNECTED) {
                 HTTPClient http;
@@ -75,14 +74,12 @@ void OnDataRecv(const uint8_t *mac_addr, const uint8_t *data, int len) {
         struct_message msg;
         memcpy(&msg, data, sizeof(msg));
 
-        // ⚡ [0.001초 실행] 수신된 그 즉시 STM32로 UART 출력!
         SerialSTM32.printf("%d,%.2f,%d\n", msg.node_id, msg.voltage, msg.state);
 
-        // ⚡ [0.001초 실행] 게이트웨이 시리얼 모니터로 즉시 출력!
-        Serial.printf("⚡ [수신즉시] Node:%d | 전압:%.2fV | 상태:%d\n", 
+        Serial.printf("[수신즉시] Node:%d | 전압:%.2fV | 상태:%d\n", 
                       msg.node_id, msg.voltage, msg.state);
 
-        // HTTP 전송은 Core 0 태스크 큐로 넘겨버림 (대기시간 0ms)
+        // HTTP 전송은 Core 0 태스크 큐로 넘겨버림
         if (xSemaphoreTake(queueMutex, 0)) {
             httpQueue.push(msg);
             xSemaphoreGive(queueMutex);
@@ -104,7 +101,7 @@ void setup() {
     Serial.println("================================");
 
     WiFi.mode(WIFI_STA);
-    esp_wifi_set_ps(WIFI_PS_NONE); // ⚡ 핵심: 허브 무선 수신 절전 완전 해제
+    esp_wifi_set_ps(WIFI_PS_NONE);
     WiFi.begin(WIFI_SSID, WIFI_PASSWORD);
 
     while (WiFi.status() != WL_CONNECTED) {
@@ -114,15 +111,14 @@ void setup() {
 
     esp_wifi_set_channel(WIFI_CHANNEL, WIFI_SECOND_CHAN_NONE);
 
-    Serial.println("\n✅ Wi-Fi 연결 완!");
+    Serial.println("\nWi-Fi 연결 완!");
 
     if (esp_now_init() == ESP_OK) {
-        Serial.println("✅ ESP-NOW 초기화 성공");
+        Serial.println("ESP-NOW 초기화 성공");
     }
 
     esp_now_register_recv_cb(OnDataRecv);
 
-    // ⚡ 백엔드 통신 전용 태스크를 Core 0에 할당 (Core 1은 ESP-NOW 전담)
     xTaskCreatePinnedToCore(HttpTask, "HttpTask", 4096, NULL, 1, NULL, 0);
 
     Serial.println("================================");

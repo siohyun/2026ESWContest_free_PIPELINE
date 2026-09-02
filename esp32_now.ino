@@ -7,11 +7,11 @@ const char* HARDWARE_ID = "S01";
 #define NODE_ID 1            // 노드 2번 설정
 #define PIEZO_PIN 32         // 센서 핀 (ADC1_CH0 / GPIO 33)
 
-const char* WIFI_SSID     = "KT_GiGA_249C";
-const char* WIFI_PASSWORD = "3ad64kg819";
+const char* WIFI_SSID     = "YOUR_WIFI_SSID";
+const char* WIFI_PASSWORD = "YOUR_WIFI_PASSWORD";
 
 // 게이트웨이(허브 보드) MAC 주소
-uint8_t receiverAddress[] = {0xc0, 0x5d, 0x89, 0xeb, 0x5e, 0x50};  
+uint8_t receiverAddress[] = {0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF};  
 
 // ── 2. 매개변수 및 상태 변수 ──────────────────────────────
 typedef enum { STATE_NORMAL = 0, STATE_WARNING = 1, STATE_DANGER = 2 } SystemState_t;
@@ -110,7 +110,6 @@ void setup() {
         delay(100);
     }
 
-    // 허브 채널 11번 강제 고정
     esp_wifi_set_channel(10, WIFI_SECOND_CHAN_NONE);
 
     if (esp_now_init() != ESP_OK) return;
