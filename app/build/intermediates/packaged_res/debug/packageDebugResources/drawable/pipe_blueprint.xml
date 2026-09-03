@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="300dp"
+    android:height="300dp"
+    android:viewportWidth="300"
+    android:viewportHeight="300">
+
+    <!-- 1. 관제판 어두운 배경 -->
+    <path
+        android:fillColor="#2D3748"
+        android:pathData="M0,0h300v300h-300z" />
+
+    <!-- 2. 중앙 배관 파이프 라인 -->
+    <path
+        android:strokeColor="#CBD5E0"
+        android:strokeWidth="16"
+        android:strokeLineCap="round"
+        android:pathData="M50,150 L250,150" />
+
+    <!-- 3. 센서 노드 1번 위치 (파란색 원) -->
+    <path
+        android:fillColor="#3182CE"
+        android:pathData="M 80, 150 m -25, 0 a 25,25 0 1,0 50,0 a 25,25 0 1,0 -50,0" />
+
+    <!-- 4. 센서 노드 2번 위치 (초록색 원) -->
+    <path
+        android:fillColor="#38A169"
+        android:pathData="M 220, 150 m -25, 0 a 25,25 0 1,0 50,0 a 25,25 0 1,0 -50,0" />
+
+</vector>
